@@ -222,9 +222,9 @@ async def translate(text: str):
                 "model": "qwen2.5",
                 "prompt": f"将以下泰语翻译成中文，只返回中文翻译结果，不要解释，不要英文: {text}",
                 "stream": False,
-                "temperature": 0.1,  # 降低随机性，使输出更确定
-                "top_p": 0.9,        # 控制采样范围
-                "num_predict": 2000   # 增加生成长度限制，确保长文档能完整翻译
+                # "temperature": 0.1,  # 降低随机性，使输出更确定
+                # "top_p": 0.9,        # 控制采样范围
+                # "num_predict": 2000   # 增加生成长度限制，确保长文档能完整翻译
             }
         )
         

@@ -550,7 +550,6 @@
                 const data = await response.text();
                 console.log('翻译结果长度:', data.length);
                 result.value = data;
-                await refreshHistory();
             } catch (error) {
                 console.error('翻译失败:', error);
                 result.value = '翻译失败：' + error.message;
@@ -609,90 +608,6 @@
         }
 
         // 加载翻译历史
-        async function loadTranslationHistory() {
-            try {
-                const response = await fetch('/api/history');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                const historyList = document.getElementById('historyList');
-                historyList.innerHTML = '';
-                
-                if (data.history.length === 0) {
-                    historyList.innerHTML = '<div class="history-item">暂无翻译历史</div>';
-                    return;
-                }
-                
-                data.history.forEach(item => {
-                    const historyItem = document.createElement('div');
-                    historyItem.className = 'history-item';
-                    
-                    historyItem.innerHTML = `
-                        <div class="history-item-header">
-                            <span class="history-filename">
-                                <i class="fas fa-file-alt"></i>
-                                ${item.filename}
-                            </span>
-                            <span class="history-time">${formatTimestamp(item.timestamp)}</span>
-                        </div>
-                        <div class="history-actions">
-                            <a href="#" class="history-action" onclick="loadTranslationRecord('${item.filename}'); return false;">
-                                <i class="fas fa-sync"></i>
-                                加载翻译
-                            </a>
-                            <a href="/input_docs/${item.filename}" target="_blank" class="history-action">
-                                <i class="fas fa-file-alt"></i>
-                                查看原文
-                            </a>
-                            <a href="/output_docs/translated_${item.filename}" target="_blank" class="history-action">
-                                <i class="fas fa-language"></i>
-                                查看译文
-                            </a>
-                        </div>
-                    `;
-                    
-                    historyList.appendChild(historyItem);
-                });
-            } catch (error) {
-                console.error('加载翻译历史失败:', error);
-                const historyList = document.getElementById('historyList');
-                historyList.innerHTML = '<div class="history-item">加载历史记录失败</div>';
-            }
-        }
-
-        // 加载特定的翻译记录
-        async function loadTranslationRecord(filename) {
-            try {
-                const response = await fetch(`/api/history/${encodeURIComponent(filename)}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                document.getElementById('inputText').value = data.thai_text || '';
-                document.getElementById('result').value = data.chinese_text || '';
-                
-                // 滚动到顶部
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            } catch (error) {
-                console.error('加载翻译记录失败:', error);
-            }
-        }
-
-        // 页面加载完成后加载翻译历史
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTranslationHistory();
-            setInterval(loadTranslationHistory, 30000); // 每30秒刷新一次历史记录
-        });
-
-        // 在文件上传成功和翻译完成后刷新历史记录
-        async function refreshHistory() {
-            await loadTranslationHistory();
-        }
     </script>
 </body>
 </html>
