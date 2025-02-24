@@ -54,6 +54,96 @@
 响应时间：~2秒
 ```
 
+## API 调用示例
+
+### 1. 文本翻译
+
+```bash
+# 简单文本翻译
+curl "http://localhost:3333/api/translate?text=สวัสดี"
+
+# 长文本翻译
+curl "http://localhost:3333/api/translate?text=สวัสดีครับ ผมชื่อจอห์น ยินดีที่ได้รู้จักครับ"
+```
+
+### 2. 检查服务状态
+
+```bash
+# 获取所有服务状态
+curl "http://localhost:3333/api/status"
+
+# 示例响应：
+{
+    "api_server": "running",
+    "ollama_service": "running",
+    "document_translator": "running",
+    "overall_status": "running",
+    "api_version": "1.0",
+    "timestamp": "2025-02-24T14:00:00"
+}
+```
+
+### 3. 上传文档
+
+```bash
+# 上传单个文件
+curl -X POST "http://localhost:3333/api/upload" \
+     -F "file=@/path/to/your/thai_document.txt"
+
+# 示例响应：
+{
+    "success": true,
+    "message": "文件上传成功",
+    "filename": "thai_document.txt"
+}
+```
+
+## 文档翻译示例
+
+### 1. 直接放置文件
+
+1. 将泰语文本文件放入 `input_docs` 目录：
+```bash
+cp your_thai_document.txt input_docs/
+```
+
+2. 文档翻译服务会自动检测并处理文件：
+- 检查文件是否包含泰语
+- 验证文件是否需要重新翻译
+- 翻译完成后保存到 `output_docs` 目录
+
+### 2. 通过 Web 界面上传
+
+1. 访问 http://localhost:3333
+2. 将文件拖拽到上传区域或点击选择文件
+3. 等待上传和翻译完成
+
+## 批量处理示例
+
+### 1. 多文件处理
+
+```bash
+# 复制多个文件到输入目录
+cp thai_doc1.txt thai_doc2.txt thai_doc3.txt input_docs/
+```
+
+文档翻译服务会：
+- 自动检测新文件
+- 并行处理多个文件
+- 使用缓存避免重复翻译
+
+### 2. 监控文件变化
+
+1. 编辑已翻译的文件：
+```bash
+echo "新的泰语内容" >> input_docs/thai_doc1.txt
+```
+
+2. 文档翻译服务会：
+- 检测到文件变化
+- 计算新的文件哈希值
+- 仅翻译更新的内容
+
 ## 性能评估
 
 ### 响应时间统计
@@ -113,3 +203,31 @@
    - 专业术语翻译准确度可能较低
    - 方言或口语表达可能需要人工校对
    - 特殊符号和表情可能会被忽略
+
+## 性能考虑
+
+1. 文件大小：
+- 建议单个文件不超过 1MB
+- 大文件会自动分段处理
+
+2. 并发处理：
+- 服务会自动管理翻译队列
+- 避免过度占用系统资源
+
+3. 缓存使用：
+- 相同内容的文件使用缓存
+- 显著提高处理速度
+
+## 最佳实践
+
+1. 文件准备：
+- 确保文件使用正确的文本编码
+- 文件名避免使用特殊字符
+
+2. 监控服务状态：
+- 定期检查服务状态
+- 及时处理错误提示
+
+3. 缓存管理：
+- 定期清理不需要的缓存
+- 保持足够的磁盘空间

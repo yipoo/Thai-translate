@@ -1,5 +1,8 @@
 fastapi==0.109.2
 uvicorn==0.27.1
-requests==2.31.0
-watchdog==3.0.0
+python-multipart
+aiofiles
 chardet==5.2.0
+watchdog==3.0.0
+requests==2.31.0
+psutil

@@ -1,2 +1,11 @@
 venv
 venv/*
+venv/
+__pycache__/
+*.pyc
+.translation_cache/
+logs/*
+
+
+input_docs/*
+output_docs/*

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰语翻译服务</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+        .container {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px;
+           
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.2em;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+        .translation-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            min-height: 400px;
+        }
+        .translation-box {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .translation-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .language-select {
+            font-size: 1.1em;
+            color: #444;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .translation-content {
+            flex: 1;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            resize: none;
+            font-size: 1.2em;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+        }
+        textarea:focus {
+            outline: none;
+        }
+        .translate-actions {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .btn i {
+            font-size: 0.9em;
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        .history-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .history-item {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .history-item:hover {
+            background-color: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .history-filename {
+            font-weight: 500;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .history-filename i {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+        .history-time {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        .history-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .history-action {
+            color: #4b5563;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .history-action:hover {
+            color: #2563eb;
+        }
+        .history-action i {
+            font-size: 0.9em;
+        }
+        .status-footer {
+            background: #fff;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .status-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .status-running {
+            background-color: #10b981;
+        }
+        .status-stopped {
+            background-color: #ef4444;
+        }
+        .status-error {
+            background-color: #f59e0b;
+        }
+        .drop-zone {
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .drop-zone:hover {
+            border-color: #3b82f6;
+        }
+        .drop-zone.dragover {
+            background-color: #f0f9ff;
+            border-color: #3b82f6;
+        }
+        .hidden {
+            display: none;
+        }
+        .upload-progress-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            z-index: 1000;
+            display: none;
+        }
+        .upload-progress-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .upload-progress-title {
+            flex-grow: 1;
+            font-size: 14px;
+            color: #374151;
+        }
+        .upload-progress-filename {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            width: 0;
+            transition: width 0.2s ease;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 6px;
+            text-align: right;
+        }
+        .upload-success .progress-bar-fill {
+            background-color: #10b981;
+        }
+        .upload-error .progress-bar-fill {
+            background-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 添加上传进度弹窗 -->
+        <div id="uploadProgressContainer" class="upload-progress-container">
+            <div class="upload-progress-header">
+                <div class="upload-progress-title">文件上传中</div>
+            </div>
+            <div id="uploadFilename" class="upload-progress-filename"></div>
+            <div class="progress-bar" id="uploadProgress">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-text" id="progressText">准备上传...</div>
+        </div>
+        <div class="header">
+            <h1>泰语翻译服务</h1>
+        </div>
+        
+        <!-- 翻译区域 -->
+        <div class="translation-container">
+            <div class="translation-box">
+                <div class="translation-header">
+                    <select class="language-select" disabled>
+                        <option selected>泰语</option>
+                    </select>
+                </div>
+                <div class="translation-content">
+                    <textarea id="inputText" placeholder="ป้อนข้อความหรืออัปโหลดเอกสาร"></textarea>
+                </div>
+                <div class="translate-actions">
+                    <label class="btn btn-secondary" for="fileInput">
+                        <i class="fas fa-file-upload"></i> 上传文档
+                    </label>
+                    <input type="file" id="fileInput" class="hidden" onchange="uploadFiles()">
+                    <button class="btn" id="translateBtn" onclick="translateText()">
+                        <i class="fas fa-language"></i>
+                        翻译
+                    </button>
+                </div>
+            </div>
+            
+            <div class="translation-box">
+                <div class="translation-header">
+                    <select class="language-select" disabled>
+                        <option selected>中文</option>
+                    </select>
+                </div>
+                <div class="translation-content">
+                    <textarea id="result" readonly placeholder="翻译结果"></textarea>
+                </div>
+                <div class="translate-actions">
+                    <button class="btn btn-secondary" onclick="copyTranslation()">
+                        <i class="far fa-copy"></i> 复制
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 翻译历史 -->
+        <!-- <div class="translation-history">
+            <div class="file-header">
+                <i class="fas fa-history"></i>
+                翻译历史
+            </div>
+            <div id="historyList" class="history-list">
+            </div>
+        </div> -->
+    </div>
+
+    <!-- 状态栏 -->
+    <footer class="status-footer">
+        <div class="status-container" id="service-status"></div>
+    </footer>
+
+    <script>
+        let allFiles = [];
+        
+        // 页面加载时获取文件列表
+        window.onload = function() {
+            checkStatus();
+            setupDragAndDrop();
+        }
+
+        // 设置拖放功能
+        function setupDragAndDrop() {
+            console.log('设置拖放功能...');
+            const dropZone = document.getElementById('inputText');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                console.log('文件拖入');
+                dropZone.classList.add('dragover');
+            }
+
+            function unhighlight(e) {
+                console.log('文件拖出');
+                dropZone.classList.remove('dragover');
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+        }
+
+        function handleDrop(e) {
+            console.log('文件拖放');
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                console.log('拖放的文件:', files[0].name);
+                const fileInput = document.getElementById('fileInput');
+                fileInput.files = files;
+                uploadFiles();
+            }
+        }
+
+        // 复制翻译结果
+        function copyTranslation() {
+            const result = document.getElementById('result');
+            result.select();
+            document.execCommand('copy');
+        }
+
+        // 加载文件内容到翻译框
+        async function loadFileContent(filePath) {
+            try {
+                console.log('加载文件内容:', filePath);
+                const response = await fetch(`/api/content?file=${encodeURIComponent(filePath)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const content = await response.text();
+                document.getElementById('inputText').value = content;
+            } catch (error) {
+                console.error('加载文件失败:', error);
+            }
+        }
+
+        // 上传文件
+        async function uploadFiles() {
+            console.log('开始上传文件...');
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+            const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+            const uploadFilename = document.getElementById('uploadFilename');
+            const progressBar = document.getElementById('uploadProgress');
+            const progressBarFill = progressBar.querySelector('.progress-bar-fill');
+            const progressText = document.getElementById('progressText');
+            
+            if (files.length === 0) {
+                console.log('没有选择文件');
+                return;
+            }
+
+            console.log('选择的文件:', files[0].name);
+            const formData = new FormData();
+            formData.append('file', files[0]);
+
+            try {
+                console.log('发送上传请求...');
+                uploadProgressContainer.style.display = 'block';
+                uploadFilename.textContent = files[0].name;
+                progressText.textContent = '准备上传...';
+                
+                const xhr = new XMLHttpRequest();
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progressBarFill.style.width = percentComplete + '%';
+                        progressText.textContent = `上传中... ${Math.round(percentComplete)}%`;
+                    }
+                };
+
+                const response = await new Promise((resolve, reject) => {
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve({
+                                ok: true,
+                                status: xhr.status,
+                                json: () => JSON.parse(xhr.responseText)
+                            });
+                        } else {
+                            reject(new Error(`HTTP error! status: ${xhr.status}`));
+                        }
+                    };
+                    xhr.onerror = () => reject(new Error('Network error'));
+                    xhr.open('POST', '/api/upload');
+                    xhr.send(formData);
+                });
+
+                console.log('上传响应状态:', response.status);
+                const data = await response.json();
+                console.log('上传响应数据:', data);
+                
+                if (data.success) {
+                    console.log('上传成功，文件名:', data.filename);
+                    progressText.textContent = '上传成功！';
+                    progressBarFill.style.backgroundColor = '#10b981';
+                    
+                    console.log('开始加载文件内容...');
+                    await loadFileContent(`input_docs/${data.filename}`);
+                    
+                    console.log('刷新历史记录...');
+                    await refreshHistory();
+                } else {
+                    throw new Error(data.message || '上传失败');
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                progressText.textContent = '上传失败';
+                progressBarFill.style.backgroundColor = '#ef4444';
+            } finally {
+                setTimeout(() => {
+                    uploadProgressContainer.style.display = 'none';
+                    progressBarFill.style.width = '0';
+                    progressBarFill.style.backgroundColor = '#3b82f6';
+                }, 2000);
+                fileInput.value = '';
+            }
+        }
+
+        // 文本翻译
+        async function translateText() {
+            const inputText = document.getElementById('inputText').value.trim();
+            const result = document.getElementById('result');
+            const translateBtn = document.getElementById('translateBtn');
+            
+            if (!inputText) {
+                console.log('没有输入文本');
+                return;
+            }
+
+            try {
+                console.log('开始翻译...');
+                translateBtn.disabled = true;
+                translateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻译中...';
+                result.value = 'Processing...';
+                
+                const response = await fetch('/api/translate?' + new URLSearchParams({
+                    text: inputText
+                }));
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.text();
+                console.log('翻译结果长度:', data.length);
+                result.value = data;
+                await refreshHistory();
+            } catch (error) {
+                console.error('翻译失败:', error);
+                result.value = '翻译失败：' + error.message;
+            } finally {
+                translateBtn.disabled = false;
+                translateBtn.innerHTML = '<i class="fas fa-language"></i> 翻译';
+            }
+        }
+
+        // 状态检查
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateStatusUI(data);
+            } catch (error) {
+                console.error('检查服务状态失败:', error);
+                updateStatusUI({
+                    api_service: 'error',
+                    ollama_service: 'error',
+                    document_service: 'error'
+                });
+            }
+        }
+
+        // 更新状态UI
+        function updateStatusUI(data) {
+            const services = {
+                'api_service': 'API',
+                'ollama_service': 'Ollama',
+                'document_service': '文档翻译'
+            };
+
+            const statusContainer = document.getElementById('service-status');
+            statusContainer.innerHTML = Object.entries(services).map(([key, name]) => `
+                <div class="status-item">
+                    <div class="status-icon status-${data[key]}"></div>
+                    <span>${name}</span>
+                </div>
+            `).join('');
+        }
+
+        // 定期检查状态
+        setInterval(checkStatus, 10000);
+
+        // 格式化时间戳
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 加载翻译历史
+        async function loadTranslationHistory() {
+            try {
+                const response = await fetch('/api/history');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '';
+                
+                if (data.history.length === 0) {
+                    historyList.innerHTML = '<div class="history-item">暂无翻译历史</div>';
+                    return;
+                }
+                
+                data.history.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-item-header">
+                            <span class="history-filename">
+                                <i class="fas fa-file-alt"></i>
+                                ${item.filename}
+                            </span>
+                            <span class="history-time">${formatTimestamp(item.timestamp)}</span>
+                        </div>
+                        <div class="history-actions">
+                            <a href="#" class="history-action" onclick="loadTranslationRecord('${item.filename}'); return false;">
+                                <i class="fas fa-sync"></i>
+                                加载翻译
+                            </a>
+                            <a href="/input_docs/${item.filename}" target="_blank" class="history-action">
+                                <i class="fas fa-file-alt"></i>
+                                查看原文
+                            </a>
+                            <a href="/output_docs/translated_${item.filename}" target="_blank" class="history-action">
+                                <i class="fas fa-language"></i>
+                                查看译文
+                            </a>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                });
+            } catch (error) {
+                console.error('加载翻译历史失败:', error);
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '<div class="history-item">加载历史记录失败</div>';
+            }
+        }
+
+        // 加载特定的翻译记录
+        async function loadTranslationRecord(filename) {
+            try {
+                const response = await fetch(`/api/history/${encodeURIComponent(filename)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                document.getElementById('inputText').value = data.thai_text || '';
+                document.getElementById('result').value = data.chinese_text || '';
+                
+                // 滚动到顶部
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            } catch (error) {
+                console.error('加载翻译记录失败:', error);
+            }
+        }
+
+        // 页面加载完成后加载翻译历史
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTranslationHistory();
+            setInterval(loadTranslationHistory, 30000); // 每30秒刷新一次历史记录
+        });
+
+        // 在文件上传成功和翻译完成后刷新历史记录
+        async function refreshHistory() {
+            await loadTranslationHistory();
+        }
+    </script>
+</body>
+</html>
