@@ -1,11 +1,14 @@
-venv
-venv/*
 venv/
 __pycache__/
 *.pyc
 .translation_cache/
-logs/*
 
+# 保留文件夹但忽略其中的文件
+logs/*
+!logs/.gitkeep
 
 input_docs/*
+!input_docs/.gitkeep
+
 output_docs/*
+!output_docs/.gitkeep
